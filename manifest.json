@@ -1,0 +1,24 @@
+{
+    "manifest_version": 2,
+    "name": "CDN POP",
+    "version": "1.0",
+    "description": "Adds a badge that shows which CDN and CDN POP the current page is being loaded from.",
+    "icons": {
+        "48": "icons/cdn_48.png",
+        "96": "icons/cdn_96.png"
+    },
+    "permissions": [
+        "dns",
+        "webRequest",
+        "<all_urls>"
+    ],
+    "background": {
+        "scripts": [
+            "background.js"
+        ]
+    },
+    "browser_action": {
+        "default_icon": "icons/cdn.png",
+        "default_title": "Unknown"
+    }
+}
