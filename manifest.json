@@ -18,7 +18,11 @@
         ]
     },
     "browser_action": {
-        "default_icon": "icons/cdn.png",
+        "default_icon": {
+            "16": "icons/cdn_16.png",
+            "32": "icons/cdn_32.png",
+            "64": "icons/cdn_64.png"
+        },
         "default_title": "Unknown"
     }
 }
