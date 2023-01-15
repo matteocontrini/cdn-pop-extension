@@ -17,7 +17,8 @@ function toLower(thing) {
 
 let detectors = [
     {
-        cdn: 'cloudflare',
+        slug: 'cloudflare',
+        name: 'Cloudflare',
         detect: (request) => {
             let header = getHeader(request, 'cf-ray');
             if (header) {
@@ -27,7 +28,8 @@ let detectors = [
         }
     },
     {
-        cdn: 'cloudfront',
+        slug: 'cloudfront',
+        name: 'Amazon CloudFront',
         detect: (request) => {
             let header = getHeader(request, 'x-amz-cf-pop');
             if (header) {
@@ -37,7 +39,8 @@ let detectors = [
         }
     },
     {
-        cdn: 'stackpath',
+        slug: 'stackpath',
+        name: 'StackPath',
         detect: (request) => {
             let header = getHeader(request, 'x-hw');
             if (header) {
@@ -50,7 +53,8 @@ let detectors = [
         }
     },
     {
-        cdn: 'bunny',
+        slug: 'bunny',
+        name: 'Bunny CDN',
         detect: (request) => {
             let header = getHeader(request, 'server');
             if (header && header.indexOf('BunnyCDN') == 0) {
@@ -60,7 +64,8 @@ let detectors = [
         }
     },
     {
-        cdn: 'cdn77',
+        slug: 'cdn77',
+        name: 'CDN77',
         detect: (request) => {
             let pop = getHeader(request, 'x-77-pop');
             if (pop) {
@@ -69,7 +74,8 @@ let detectors = [
         }
     },
     {
-        cdn: 'fastly',
+        slug: 'fastly',
+        name: 'Fastly',
         detect: (request) => {
             let server = toLower(getHeader(request, 'server'));
             let timer = getHeader(request, 'x-timer');
@@ -84,7 +90,8 @@ let detectors = [
 
 let cnameDetectors = [
     {
-        cdn: 'akamai',
+        slug: 'akamai',
+        name: 'Akamai',
         domains: ['akamaiedge.net', 'akamai.net']
     }
 ];
@@ -96,23 +103,24 @@ function onRequest(details) {
         return;
     }
 
-    let cdn;
+    let cdnSlug;
+    let cdnName;
     let pop;
 
     for (const detector of detectors) {
         let match = detector.detect(details);
         if (match) {
-            cdn = detector.cdn;
+            cdnSlug = detector.slug;
+            cdnName = detector.name;
             pop = match.pop;
         }
     }
 
-    let hostname = new URL(details.url).hostname;
-
-    if (cdn) {
-        updateBadge(tabId, hostname, cdn, pop);
+    if (cdnSlug) {
+        updateBadge(tabId, cdnSlug, cdnName, pop);
     }
     else {
+        let hostname = new URL(details.url).hostname;
         browser.dns.resolve(hostname, ['canonical_name']).then(resp => {
             let canonicalName = resp['canonicalName'];
             console.log(`Resolved ${hostname} to CNAME ${canonicalName}`);
@@ -120,7 +128,7 @@ function onRequest(details) {
             for (const detector of cnameDetectors) {
                 for (const domain of detector.domains) {
                     if (canonicalName.endsWith(domain)) {
-                        updateBadge(tabId, hostname, detector.cdn, null);
+                        updateBadge(tabId, detector.slug, detector.name, null);
                         return;
                     }
                 }
@@ -129,11 +137,9 @@ function onRequest(details) {
     }
 }
 
-function updateBadge(tabId, hostname, cdn, pop) {
-    console.log(tabId, hostname, cdn, pop)
-
+function updateBadge(tabId, cdnSlug, cdnName, pop) {
     browser.browserAction.setIcon({
-        path: `icons/${cdn}.png`,
+        path: `icons/${cdnSlug}.png`,
         tabId: tabId,
     });
 
@@ -146,10 +152,12 @@ function updateBadge(tabId, hostname, cdn, pop) {
         });
     }
 
-    browser.browserAction.setTitle({
-        title: `${cdn} (${pop})`,
-        tabId: tabId,
-    });
+    let title = cdnName;
+    if (pop) {
+        title += ` (${pop})`;
+    }
+
+    browser.browserAction.setTitle({ title, tabId });
 }
 
 browser.webRequest.onCompleted.addListener(
