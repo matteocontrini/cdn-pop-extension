@@ -1,2 +1,4 @@
 *.zip
 stuff/
+.idea
+node_modules
