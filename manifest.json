@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "CDN POP",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "description": "Adds a badge that shows which CDN and CDN POP the current page is being loaded from.",
     "icons": {
         "48": "icons/cdn_48.png",
