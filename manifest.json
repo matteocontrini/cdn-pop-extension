@@ -24,5 +24,13 @@
             "64": "icons/cdn_64.png"
         },
         "default_title": "Unknown"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "strict_min_version": "115.0"
+        },
+        "gecko_android": {
+            "strict_min_version": "115.0"
+        }
     }
 }
