@@ -85,6 +85,22 @@ let detectors = [
                 return { pop };
             }
         }
+    },
+    {
+        slug: 'vercel',
+        name: 'Vercel',
+        detect: (request) => {
+            let header = getHeader(request, 'x-vercel-id');
+            console.log(header);
+            if (header) {
+                // Example header: "fra1::ljljx-1755673962477-1537fccf6633"
+                const index = header.indexOf('::');
+                if (index !== -1) {
+                    const pop = header.substring(0, index);
+                    return { pop };
+                }
+            }
+        }
     }
 ];
 
@@ -161,7 +177,7 @@ function updateBadge(tabId, cdnSlug, cdnName, pop) {
 }
 
 browser.webRequest.onCompleted.addListener(
-    onRequest, 
+    onRequest,
     {
         urls: ['<all_urls>'],
         types: ['main_frame']
