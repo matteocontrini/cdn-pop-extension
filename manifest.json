@@ -23,7 +23,7 @@
             "32": "icons/cdn_32.png",
             "64": "icons/cdn_64.png"
         },
-        "default_title": "Unknown"
+        "default_title": "Unknown CDN"
     },
     "browser_specific_settings": {
         "gecko": {
